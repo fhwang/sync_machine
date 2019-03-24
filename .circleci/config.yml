@@ -9,6 +9,7 @@ jobs:
       # specify the version you desire here
       - image: circleci/ruby:2.4.1-node-browsers
       - image: circleci/mongo:3.6.9
+      - image: redis:3.2.11
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -56,7 +57,7 @@ jobs:
               --format progress \
               -r rspec_junit_formatter
               --format RspecJunitFormatter \
-              --out /tmp/test-results/rspec.xml \
+              --out /tmp/test-results/rspec/results.xml \
               --format progress \
               $TEST_FILES
 
