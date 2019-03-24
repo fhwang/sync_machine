@@ -53,6 +53,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.6.0)
     rspec-support (3.6.0)
+    rspec_junit_formatter (0.4.1)
+      rspec-core (>= 2, < 4, != 2.12.0)
     sidekiq (5.0.5)
       concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
@@ -71,6 +73,7 @@ DEPENDENCIES
   factory_bot
   rake (~> 10.0)
   rspec (~> 3.0)
+  rspec_junit_formatter
   sync_machine!
 
 BUNDLED WITH
