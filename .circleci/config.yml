@@ -55,7 +55,7 @@ jobs:
 
             bundle exec rspec \
               --format progress \
-              -r rspec_junit_formatter
+              -r rspec_junit_formatter \
               --format RspecJunitFormatter \
               --out /tmp/test-results/rspec/results.xml \
               --format progress \
