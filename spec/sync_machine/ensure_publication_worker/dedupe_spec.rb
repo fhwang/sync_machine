@@ -2,10 +2,10 @@ require 'spec_helper'
 
 RSpec.describe "SyncMachine::EnsurePublicationWorker deduping" do
   let(:enqueue_time_str) { Time.now.utc.to_s }
-  let(:order) { Order.new }
+  let(:order) { Order.new(id: subject_id) }
   let(:redis_double) { double('Redis') }
   let(:redis_lock) { "TestSync::EnsurePublicationWorker:#{subject_id}" }
-  let(:subject_id) { rand(1_000_000) }
+  let(:subject_id) { rand(1_000_000).to_s }
 
   before do
     allow(Redis).to receive(:current).and_return(redis_double)
@@ -48,7 +48,7 @@ RSpec.describe "SyncMachine::EnsurePublicationWorker deduping" do
       expect {
         TestSync::EnsurePublicationWorker.new.perform(
           subject_id, enqueue_time_str
-       )
+        )
       }.to raise_error(StandardError)
     end
   end

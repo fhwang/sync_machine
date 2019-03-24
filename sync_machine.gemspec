@@ -9,8 +9,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Francis Hwang"]
   spec.email         = ["sera@fhwang.net"]
 
-  spec.summary       = %q{A mini-framework for intelligently publishing complex model changes to an external API.}
-  spec.description   = %q{A mini-framework for intelligently publishing complex model changes to an external API.}
+  spec.summary       =
+    %q{A mini-framework for intelligently publishing complex model changes to an external API.}
+  spec.description   =
+    %q{A mini-framework for intelligently publishing complex model changes to an external API.}
   spec.homepage      = "https://github.com/fhwang/sync_machine"
   spec.license       = "MIT"
 
@@ -34,14 +36,14 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "activesupport"
+  spec.add_runtime_dependency "fhwang-wisper-mongoid"
   spec.add_runtime_dependency "mongoid"
   spec.add_runtime_dependency "sidekiq"
   spec.add_runtime_dependency "wisper"
-  spec.add_runtime_dependency "fhwang-wisper-mongoid"
 
   spec.add_development_dependency "bundler", "~> 2.0"
+  spec.add_development_dependency "factory_bot"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "factory_bot"
   spec.add_development_dependency "rspec_junit_formatter"
 end
