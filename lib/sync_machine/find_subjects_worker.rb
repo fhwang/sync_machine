@@ -1,6 +1,9 @@
 require "sidekiq"
 
 module SyncMachine
+  # After one observed model has changed, find all relevant subjects whose
+  # documents may have changed.  Enqueues one EnsurePublicationWorker job for
+  # each relevant subject.
   class FindSubjectsWorker
     include Sidekiq::Worker
 
@@ -12,28 +15,45 @@ module SyncMachine
 
     def self.method_missing(meth, *args, &block)
       if meth.to_s =~ /^subject_ids_from_.*/
-        self.hooks[meth] = block
+        hooks[meth] = Hook.new(block)
       else
         super
       end
     end
 
+    # :reek:LongParameterList is unavoidable here since this is a Sidekiq
+    # worker
     def perform(record_class_name, record_id, changed_keys, enqueue_time)
       record = record_class_name.constantize.find(record_id)
-      hook_name =
-        ("subject_ids_from_" +
-        record_class_name.gsub(/::/, '').underscore).to_sym
-      hook = self.class.hooks[hook_name]
-      raw_source_ids = if hook.arity == 2
-                     hook.call(record, changed_keys)
-                   else
-                     hook.call(record)
-                   end
-      source_ids = Array.wrap(raw_source_ids).map(&:to_s)
+      source_ids = find_source_ids(record, changed_keys)
       (source_ids || []).each do |source_id|
         self.class.parent.const_get('EnsurePublicationWorker').perform_async(
           source_id, enqueue_time
         )
+      end
+    end
+
+    private
+
+    def find_source_ids(record, changed_keys)
+      hook_name = (
+        "subject_ids_from_" + record.class.name.gsub(/::/, '').underscore).to_sym
+      self.class.hooks[hook_name].call(record, changed_keys)
+    end
+
+    # Wrap a "subject_ids_from_*" block.
+    class Hook
+      def initialize(block)
+        @block = block
+      end
+
+      def call(record, changed_keys)
+        raw_source_ids = if @block.arity == 2
+                           @block.call(record, changed_keys)
+                         else
+                           @block.call(record)
+                         end
+        Array.wrap(raw_source_ids).map(&:to_s)
       end
     end
   end
