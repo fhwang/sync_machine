@@ -53,7 +53,9 @@ module SyncMachine
                          else
                            @block.call(record)
                          end
-        Array.wrap(raw_source_ids).map(&:to_s)
+        Array.wrap(raw_source_ids).map { |raw_source_id|
+          SyncMachine.orm_adapter.record_id_for_job(raw_source_id)
+        }
       end
     end
   end
