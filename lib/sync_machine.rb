@@ -26,6 +26,18 @@ module SyncMachine
 
   def self.extended(base)
     base.mattr_accessor :subject_sym
+
+    # Force loading of all relevant classes.  Should only be necessary when
+    # running your application in a way that it defers loading constants, i.e.,
+    # Rails' development or test mode.
+    def base.eager_load
+      const_names = %w(
+        Payload FindSubjectsWorker EnsurePublicationWorker ChangeListener
+      )
+      const_names.each do |const_name|
+        const_get(const_name)
+      end
+    end
   end
 
   def self.sync_module(child_const)
