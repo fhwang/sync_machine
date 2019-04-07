@@ -25,7 +25,7 @@ module SyncMachine
 
   def self.setup_orm_adapter(orm_adapter)
     self.orm_adapter = orm_adapter
-    self.orm_adapter.setup
+    orm_adapter.setup
   end
 
   def self.extended(base)
