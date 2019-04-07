@@ -1,19 +1,19 @@
-module TestSync
+module TestActiveRecordSync
   extend SyncMachine
 
-  subject :order
+  subject :active_record_order
 
   class ChangeListener < SyncMachine::ChangeListener
-    listen_to_models :customer
+    listen_to_models :active_record_customer
   end
 
   class FindSubjectsWorker < SyncMachine::FindSubjectsWorker
-    subject_ids_from_customer do |customer|
-      customer.order_ids
+    subject_ids_from_active_record_customer do |active_record_customer|
+      active_record_customer.active_record_order_ids
     end
 
-    subject_ids_from_order do |order|
-      order.id
+    subject_ids_from_active_record_order do |active_record_order|
+      active_record_order.id
     end
   end
 
@@ -43,5 +43,3 @@ module TestSync
     end
   end
 end
-
-TestSync.setup

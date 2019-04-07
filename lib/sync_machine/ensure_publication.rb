@@ -56,7 +56,7 @@ module SyncMachine
     end
 
     def subject_id
-      @subject.id.to_s
+      SyncMachine.orm_adapter.record_id_for_job(@subject.id)
     end
   end
 end

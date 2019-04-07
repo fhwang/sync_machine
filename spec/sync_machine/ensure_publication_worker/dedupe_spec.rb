@@ -2,14 +2,14 @@ require 'spec_helper'
 
 RSpec.describe "SyncMachine::EnsurePublicationWorker deduping" do
   let(:enqueue_time_str) { Time.now.utc.to_s }
-  let(:order) { Order.new(id: subject_id) }
+  let(:order) { MongoidOrder.new(id: subject_id) }
   let(:redis_double) { double('Redis') }
-  let(:redis_lock) { "TestSync::EnsurePublicationWorker:#{subject_id}" }
+  let(:redis_lock) { "TestMongoidSync::EnsurePublicationWorker:#{subject_id}" }
   let(:subject_id) { rand(1_000_000).to_s }
 
   before do
     allow(Redis).to receive(:current).and_return(redis_double)
-    allow(Order).to \
+    allow(MongoidOrder).to \
       receive(:find).with(subject_id).and_return(order)
   end
 
@@ -19,7 +19,7 @@ RSpec.describe "SyncMachine::EnsurePublicationWorker deduping" do
         redis_lock, "true", nx: true, ex: 10.minutes
       ).and_return(true)
       expect(redis_double).to receive(:del).with(redis_lock)
-      TestSync::EnsurePublicationWorker.new.perform(
+      TestMongoidSync::EnsurePublicationWorker.new.perform(
         subject_id, enqueue_time_str
       )
     end
@@ -30,9 +30,9 @@ RSpec.describe "SyncMachine::EnsurePublicationWorker deduping" do
       expect(redis_double).to receive(:set).with(
         redis_lock, "true", nx: true, ex: 10.minutes
       ).and_return(false)
-      expect(TestSync::EnsurePublicationWorker).to \
+      expect(TestMongoidSync::EnsurePublicationWorker).to \
         receive(:perform_in).with(anything, subject_id, enqueue_time_str)
-      TestSync::EnsurePublicationWorker.new.perform(
+      TestMongoidSync::EnsurePublicationWorker.new.perform(
         subject_id, enqueue_time_str
       )
     end
@@ -44,9 +44,9 @@ RSpec.describe "SyncMachine::EnsurePublicationWorker deduping" do
         redis_lock, "true", nx: true, ex: 10.minutes
       ).and_return(true)
       expect(redis_double).to receive(:del).with(redis_lock)
-      allow(TestSync::PostService).to receive(:post).and_raise(StandardError)
+      allow(TestMongoidSync::PostService).to receive(:post).and_raise(StandardError)
       expect {
-        TestSync::EnsurePublicationWorker.new.perform(
+        TestMongoidSync::EnsurePublicationWorker.new.perform(
           subject_id, enqueue_time_str
         )
       }.to raise_error(StandardError)
@@ -61,13 +61,13 @@ RSpec.describe "SyncMachine::EnsurePublicationWorker deduping" do
         redis_lock, "true", nx: true, ex: 10.minutes
       ).and_return(true)
       expect(redis_double).to receive(:del).with(redis_lock)
-      TestSync::Payload.create!(
+      TestMongoidSync::Payload.create!(
         body: order.next_payload,
         generated_at: Time.now,
         subject_id: subject_id
       )
-      expect(TestSync::PostService).not_to receive(:post)
-      TestSync::EnsurePublicationWorker.new.perform(
+      expect(TestMongoidSync::PostService).not_to receive(:post)
+      TestMongoidSync::EnsurePublicationWorker.new.perform(
         subject_id, enqueue_time_str
       )
     end

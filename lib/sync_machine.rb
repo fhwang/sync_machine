@@ -1,20 +1,47 @@
 require "active_support/core_ext/class"
 require "active_support/core_ext/string"
-require "mongoid"
 require "sync_machine/change_listener"
 require "sync_machine/ensure_publication"
 require "sync_machine/ensure_publication/deduper"
 require "sync_machine/ensure_publication/publication_history"
 require "sync_machine/ensure_publication_worker"
 require "sync_machine/find_subjects_worker"
+require "sync_machine/orm_adapter/active_record"
+require "sync_machine/orm_adapter/mongoid"
 require "sync_machine/version"
-require "wisper/mongoid"
 
 # A mini-framework for intelligently publishing complex model changes to an
 # external API..
 module SyncMachine
+  mattr_accessor :orm_adapter
+
+  def self.use_active_record
+    setup_orm_adapter(OrmAdapter::ActiveRecord)
+  end
+
+  def self.use_mongoid
+    setup_orm_adapter(OrmAdapter::Mongoid)
+  end
+
+  def self.setup_orm_adapter(orm_adapter)
+    self.orm_adapter = orm_adapter
+    orm_adapter.setup
+  end
+
   def self.extended(base)
     base.mattr_accessor :subject_sym
+
+    # Force loading of all relevant classes.  Should only be necessary when
+    # running your application in a way that it defers loading constants, i.e.,
+    # Rails' development or test mode.
+    def base.eager_load
+      const_names = %w(
+        Payload FindSubjectsWorker EnsurePublicationWorker ChangeListener
+      )
+      const_names.each do |const_name|
+        const_get(const_name)
+      end
+    end
   end
 
   def self.sync_module(child_const)
@@ -28,29 +55,4 @@ module SyncMachine
   def subject_class
     subject_sym.to_s.camelize.constantize
   end
-
-  def setup
-    define_payload_class unless const_defined?('Payload')
-    const_get('ChangeListener').subscribe
-  end
-
-  # :reek:TooManyStatements is unavoidable with this sort of dynamic class
-  # definition
-  def define_payload_class
-    collection_name = name.underscore + '_payloads'
-    payload_class = Class.new do
-      include Mongoid::Document
-      store_in collection: collection_name
-
-      field :body, type: Hash
-      field :generated_at, type: Time
-      field :subject_id, type: String
-
-      validates :generated_at, presence: true
-      validates :subject_id, presence: true, uniqueness: true
-    end
-    const_set('Payload', payload_class)
-  end
 end
-
-Wisper::Mongoid.extend_all
