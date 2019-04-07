@@ -1,5 +1,6 @@
 module SyncMachine
   module OrmAdapter
+    # Adapt SyncMachine for use with ActiveRecord-based applications.
     module ActiveRecord
       def self.setup
         require "active_record"

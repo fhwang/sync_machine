@@ -1,5 +1,6 @@
 module SyncMachine
   module OrmAdapter
+    # Adapt SyncMachine for use with Mongoid-based applications.
     module Mongoid
       def self.setup
         require "mongoid"

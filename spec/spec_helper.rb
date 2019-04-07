@@ -24,7 +24,7 @@ RSpec.configure do |config|
 end
 
 def setup_active_record
-  SyncMachine.setup(orm: :active_record)
+  SyncMachine.use_active_record
   ActiveRecord::Base.establish_connection(
     adapter: 'sqlite3',
     database: ':memory:'
@@ -35,7 +35,7 @@ def setup_active_record
 end
 
 def setup_mongoid
-  SyncMachine.setup(orm: :mongoid)
+  SyncMachine.use_mongoid
   require 'support/mongoid_models'
   require 'support/test_mongoid_sync'
   Mongoid.load!("./spec/mongoid.yml", :test)

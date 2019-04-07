@@ -15,12 +15,16 @@ require "sync_machine/version"
 module SyncMachine
   mattr_accessor :orm_adapter
 
-  def self.setup(orm: :active_record)
-    if orm == :active_record
-      self.orm_adapter = OrmAdapter::ActiveRecord
-    elsif orm == :mongoid
-      self.orm_adapter = OrmAdapter::Mongoid
-    end
+  def self.use_active_record
+    setup_orm_adapter(OrmAdapter::ActiveRecord)
+  end
+
+  def self.use_mongoid
+    setup_orm_adapter(OrmAdapter::Mongoid)
+  end
+
+  def self.setup_orm_adapter(orm_adapter)
+    self.orm_adapter = orm_adapter
     self.orm_adapter.setup
   end
 
