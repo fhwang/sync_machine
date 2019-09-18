@@ -28,7 +28,7 @@ module SyncMachine
   end
 
   def self.sync_module(child_const)
-    child_const.name.split(/::/).first.constantize
+    child_const.name.split(/::/)[0..-2].join('::').constantize
   end
 
   def subject(subject_sym)
