@@ -1,5 +1,6 @@
 require "active_support/core_ext/class"
 require "active_support/core_ext/string"
+require "active_support/hash_with_indifferent_access"
 require "sync_machine/change_listener"
 require "sync_machine/ensure_publication"
 require "sync_machine/ensure_publication/deduper"
@@ -25,17 +26,19 @@ module SyncMachine
 
   def self.extended(base)
     base.mattr_accessor :subject_sym
+    base.mattr_accessor :subject_opts
   end
 
   def self.sync_module(child_const)
     child_const.name.split(/::/)[0..-2].join('::').constantize
   end
 
-  def subject(subject_sym)
+  def subject(subject_sym, opts = {})
     self.subject_sym = subject_sym
+    self.subject_opts = ActiveSupport::HashWithIndifferentAccess.new(opts)
   end
 
   def subject_class
-    subject_sym.to_s.camelize.constantize
+    (subject_opts[:class_name] || subject_sym.to_s.camelize).constantize
   end
 end

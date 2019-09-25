@@ -13,3 +13,15 @@ module OuterNesting
     end
   end
 end
+
+module ClassNameTestModule
+  class Subject
+
+  end
+
+  module Sync
+    extend SyncMachine
+
+    subject :subject, class_name: 'ClassNameTestModule::Subject'
+  end
+end
