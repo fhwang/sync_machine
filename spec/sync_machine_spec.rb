@@ -8,4 +8,9 @@ RSpec.describe SyncMachine do
     expect(SyncMachine.sync_module(OuterNesting::NestedTestSync::ChangeListener)).to \
       eq(OuterNesting::NestedTestSync)
   end
+
+  it "handles subjects with specified class names" do
+    expect(ClassNameTestModule::Sync.subject_class).to \
+      eq(ClassNameTestModule::Subject)
+  end
 end
