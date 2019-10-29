@@ -32,7 +32,7 @@ module SyncMachine
     end
 
     def after_record_saved(record)
-      return unless changed_keys(record).present?
+      return unless orm_adapter.sufficient_changes_to_find_subjects?(record)
       sync_module = SyncMachine.sync_module(self.class)
       finder_class = sync_module.const_get('FindSubjectsWorker')
       finder_class.perform_async(
