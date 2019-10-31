@@ -1,3 +1,5 @@
+require "active_support/json"
+require "active_support/core_ext/object/json"
 require "wisper"
 
 module SyncMachine
@@ -39,7 +41,7 @@ module SyncMachine
         record.class.name,
         record_id_for_job(record.id),
         changed_keys(record),
-        Time.now.iso8601
+        Time.now.to_json
       )
     end
 

@@ -23,12 +23,12 @@ module SyncMachine
 
     # :reek:LongParameterList is unavoidable here since this is a Sidekiq
     # worker
-    def perform(record_class_name, record_id, changed_keys, enqueue_time)
+    def perform(record_class_name, record_id, changed_keys, enqueue_time_str)
       record = record_class_name.constantize.find(record_id)
       source_ids = find_source_ids(record, changed_keys)
       (source_ids || []).each do |source_id|
         self.class.parent.const_get('EnsurePublicationWorker').perform_async(
-          source_id, enqueue_time
+          source_id, enqueue_time_str
         )
       end
     end
