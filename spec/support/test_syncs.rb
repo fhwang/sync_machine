@@ -3,6 +3,9 @@ module TestSync
 
   class ChangeListener < SyncMachine::ChangeListener
   end
+
+  class FindSubjectsWorker < SyncMachine::FindSubjectsWorker
+  end
 end
 
 module OuterNesting

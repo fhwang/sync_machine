@@ -1,4 +1,6 @@
 require 'spec_helper'
+require "active_support/json"
+require "active_support/core_ext/object/json"
 require 'active_support/core_ext/numeric/time'
 
 RSpec.describe SyncMachine::EnsurePublication::Deduper do
@@ -10,7 +12,7 @@ RSpec.describe SyncMachine::EnsurePublication::Deduper do
       enqueue_time_str: enqueue_time_str
     )
   }
-  let(:enqueue_time_str) { Time.now.utc.to_s }
+  let(:enqueue_time_str) { Time.now.to_json }
   let(:job_class) {
     double('job class', name: 'TestSync::EnsurePublicationWorker')
   }
@@ -66,7 +68,7 @@ RSpec.describe SyncMachine::EnsurePublication::Deduper do
   end
 
   describe "if the previous payload was saved sometime after the enqueue time" do
-    let(:enqueue_time_str) { (Time.now - 1.minute).utc.to_s }
+    let(:enqueue_time_str) { (Time.now - 1.minute).utc.to_json }
     let(:last_job_finished_at) { Time.now.utc }
 
     it "considers this a duplicate job and does not continue" do
