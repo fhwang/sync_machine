@@ -14,7 +14,10 @@ module SyncMachine
     end
 
     def self.method_missing(meth, *args, &block)
-      if meth.to_s =~ /^subject_ids_from_.*/
+      if meth.to_s == "subject_ids_from_#{parent.subject_sym}"
+        block ||= ->(subject) { [subject.id.to_s] }
+        hooks[meth] = Hook.new(block)
+      elsif meth.to_s =~ /^subject_ids_from_.*/
         hooks[meth] = Hook.new(block)
       else
         super
