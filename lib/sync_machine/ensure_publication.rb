@@ -51,8 +51,8 @@ module SyncMachine
       else
         hook(:publish).call(@subject, payload_body)
         publication_history.update(payload_body)
+        call_after_publish
       end
-      call_after_publish
     end
 
     def subject_id
