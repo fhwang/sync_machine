@@ -7,6 +7,7 @@ require "sync_machine/ensure_publication/deduper"
 require "sync_machine/ensure_publication/publication_history"
 require "sync_machine/ensure_publication_worker"
 require "sync_machine/find_subjects_worker"
+require "sync_machine/orm_adapters"
 require "sync_machine/version"
 
 # A mini-framework for intelligently publishing complex model changes to an
@@ -31,6 +32,10 @@ module SyncMachine
 
   def self.sync_module(child_const)
     child_const.name.split(/::/)[0..-2].join('::').constantize
+  end
+
+  def orm_adapter
+    SyncMachine::OrmAdapters.orm_adapter(self)
   end
 
   def subject(subject_sym, opts = {})

@@ -1,5 +1,7 @@
 require "bundler/setup"
+require "active_record"
 require "factory_bot"
+require "mongoid"
 require "sync_machine"
 require "sidekiq/testing"
 

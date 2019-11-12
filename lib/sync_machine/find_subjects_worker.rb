@@ -9,6 +9,12 @@ module SyncMachine
 
     class_attribute :hooks
 
+    def self.add_hook(meth, block)
+      sync_module = SyncMachine.sync_module(self)
+      hooks[meth] = Hook.new(sync_module, block)
+    end
+    private_class_method :add_hook
+
     def self.inherited(subclass)
       subclass.hooks = {}
     end
@@ -16,9 +22,9 @@ module SyncMachine
     def self.method_missing(meth, *args, &block)
       if meth.to_s == "subject_ids_from_#{parent.subject_sym}"
         block ||= ->(subject) { [subject.id.to_s] }
-        hooks[meth] = Hook.new(block)
+        add_hook(meth, block)
       elsif meth.to_s =~ /^subject_ids_from_.*/
-        hooks[meth] = Hook.new(block)
+        add_hook(meth, block)
       else
         super
       end
@@ -46,7 +52,8 @@ module SyncMachine
 
     # Wrap a "subject_ids_from_*" block.
     class Hook
-      def initialize(block)
+      def initialize(sync_module, block)
+        @sync_module = sync_module
         @block = block
       end
 
@@ -57,7 +64,7 @@ module SyncMachine
                            @block.call(record)
                          end
         Array.wrap(raw_source_ids).map { |raw_source_id|
-          SyncMachine.orm_adapter.record_id_for_job(raw_source_id)
+          @sync_module.orm_adapter.record_id_for_job(raw_source_id)
         }
       end
     end

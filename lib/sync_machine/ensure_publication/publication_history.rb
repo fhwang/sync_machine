@@ -38,7 +38,7 @@ module SyncMachine
         payload_class.create!(
           body: payload_body,
           generated_at: Time.now,
-          subject_id: SyncMachine.orm_adapter.record_id_for_job(@subject_id)
+          subject_id: @sync_module.orm_adapter.record_id_for_job(@subject_id)
         )
       end
 

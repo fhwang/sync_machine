@@ -1,18 +1,9 @@
-module TestSync
-  extend SyncMachine
-
-  class ChangeListener < SyncMachine::ChangeListener
-  end
-
-  class FindSubjectsWorker < SyncMachine::FindSubjectsWorker
-  end
-end
-
 module OuterNesting
-  module NestedTestSync
+  module NestedSync
     extend SyncMachine
 
     class ChangeListener < SyncMachine::ChangeListener
+      listen_to_models :subject
     end
   end
 end

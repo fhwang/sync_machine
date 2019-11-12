@@ -4,9 +4,10 @@ RSpec.describe SyncMachine do
   end
 
   it "handles SyncMachine modules of arbitrary depth" do
-    expect(SyncMachine.sync_module(TestSync::ChangeListener)).to eq(TestSync)
-    expect(SyncMachine.sync_module(OuterNesting::NestedTestSync::ChangeListener)).to \
-      eq(OuterNesting::NestedTestSync)
+    expect(SyncMachine.sync_module(ActiveRecordOrderSync::ChangeListener)).to \
+      eq(ActiveRecordOrderSync)
+    expect(SyncMachine.sync_module(OuterNesting::NestedSync::ChangeListener)).to \
+      eq(OuterNesting::NestedSync)
   end
 
   it "handles subjects with specified class names" do
