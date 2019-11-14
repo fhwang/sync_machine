@@ -56,7 +56,7 @@ module SyncMachine
     end
 
     def orm_adapter
-      SyncMachine.orm_adapter
+      SyncMachine.sync_module(self.class).orm_adapter
     end
   end
 end

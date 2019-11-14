@@ -39,9 +39,14 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "sidekiq"
   spec.add_runtime_dependency "wisper"
 
+  spec.add_development_dependency "activerecord"
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "factory_bot"
+  spec.add_development_dependency "fhwang-wisper-mongoid"
+  spec.add_development_dependency "mongoid"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec_junit_formatter"
+  spec.add_development_dependency "sqlite3"
+  spec.add_development_dependency "wisper-activerecord"
 end
