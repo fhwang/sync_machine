@@ -1,3 +1,10 @@
+AllCops:
+  Exclude:
+    - 'lib/rails/generators/active_record/templates/*.rb'
+    - 'lib/rails/generators/mongoid/templates/*.rb'
+    - 'lib/rails/generators/rspec/templates/*.rb'
+    - 'lib/rails/generators/templates/*.rb'
+
 Layout/ExtraSpacing:
   Enabled: false
 
