@@ -3,12 +3,11 @@ require "active_support/core_ext/string"
 require "active_support/hash_with_indifferent_access"
 require "sync_machine/change_listener"
 require "sync_machine/ensure_publication"
-require "sync_machine/ensure_publication/deduper"
-require "sync_machine/ensure_publication/publication_history"
 require "sync_machine/ensure_publication_worker"
 require "sync_machine/find_subjects_worker"
 require "sync_machine/orm_adapters"
 require "sync_machine/version"
+require "sync_machine/railtie" if defined?(Rails::Railtie)
 
 # A mini-framework for intelligently publishing complex model changes to an
 # external API..
