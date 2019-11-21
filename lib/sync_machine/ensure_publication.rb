@@ -1,3 +1,6 @@
+require "sync_machine/ensure_publication/deduper"
+require "sync_machine/ensure_publication/publication_history"
+
 module SyncMachine
   # Orchestrate logic around a change notification and whether to publish a new
   # document to the service.
