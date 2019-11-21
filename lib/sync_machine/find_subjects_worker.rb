@@ -11,7 +11,7 @@ module SyncMachine
 
     def self.add_hook(meth, block)
       sync_module = SyncMachine.sync_module(self)
-      hooks[meth] = Hook.new(sync_module, block)
+      hooks[meth] = Hook.new(meth.to_s, sync_module, block)
     end
     private_class_method :add_hook
 
@@ -52,20 +52,23 @@ module SyncMachine
 
     # Wrap a "subject_ids_from_*" block.
     class Hook
-      def initialize(sync_module, block)
+      def initialize(name, sync_module, block)
+        @name = name.to_s
         @sync_module = sync_module
         @block = block
       end
 
       def call(record, changed_keys)
-        raw_source_ids = if @block.arity == 2
-                           @block.call(record, changed_keys)
-                         else
-                           @block.call(record)
-                         end
-        Array.wrap(raw_source_ids).map { |raw_source_id|
-          @sync_module.orm_adapter.record_id_for_job(raw_source_id)
-        }
+        TracerAdapters.tracer_adapter.start_active_span(@name) do
+          raw_source_ids = if @block.arity == 2
+                             @block.call(record, changed_keys)
+                           else
+                             @block.call(record)
+                           end
+          Array.wrap(raw_source_ids).map { |raw_source_id|
+            @sync_module.orm_adapter.record_id_for_job(raw_source_id)
+          }
+        end
       end
     end
   end

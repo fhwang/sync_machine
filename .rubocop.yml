@@ -17,6 +17,9 @@ Layout/SpaceInsideHashLiteralBraces:
 Layout/TrailingBlankLines:
   Enabled: false
 
+Lint/RescueException:
+  Enabled: false
+
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'

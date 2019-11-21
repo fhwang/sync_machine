@@ -44,6 +44,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "factory_bot"
   spec.add_development_dependency "fhwang-wisper-mongoid"
   spec.add_development_dependency "mongoid"
+  spec.add_development_dependency "opentracing"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec_junit_formatter"

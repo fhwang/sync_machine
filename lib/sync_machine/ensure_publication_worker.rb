@@ -10,7 +10,7 @@ module SyncMachine
 
     [:build, :check_publishable, :publish, :after_publish].each do |hook|
       define_singleton_method(hook) do |&block|
-        hooks[hook] = block
+        hooks[hook] = Hook.new(hook.to_s, block)
       end
     end
 
@@ -34,6 +34,20 @@ module SyncMachine
       sync_module = SyncMachine.sync_module(self.class)
       subject_class = sync_module.subject_class
       subject_class.find(subject_id)
+    end
+
+    # Wrap build, check_publishable, etc blocks.
+    class Hook
+      def initialize(name, block)
+        @name = name
+        @block = block
+      end
+
+      def call(*args)
+        TracerAdapters.tracer_adapter.start_active_span(@name) do
+          @block.call(*args)
+        end
+      end
     end
   end
 end

@@ -1,9 +1,7 @@
 begin
   require 'wisper/mongoid'
 rescue LoadError
-  Kernel.abort(
-    "Please install the fhwang-wisper-mongoid gem when using SyncMachine with Mongoid."
-  )
+  SyncMachine.abort_with_installation_hint('fhwang-wisper-mongoid', 'Mongoid')
 end
 
 module SyncMachine
