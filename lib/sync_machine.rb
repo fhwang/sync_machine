@@ -7,6 +7,7 @@ require "sync_machine/ensure_publication_worker"
 require "sync_machine/find_subjects_worker"
 require "sync_machine/orm_adapters"
 require "sync_machine/version"
+require "sync_machine/railtie" if defined?(Rails::Railtie)
 
 # A mini-framework for intelligently publishing complex model changes to an
 # external API..

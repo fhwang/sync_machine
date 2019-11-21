@@ -1,8 +1,3 @@
-Bundler.require(:default)
-
-require "sync_machine/orm_adapters/active_record_adapter" if Module.const_defined?(:ActiveRecord)
-require "sync_machine/orm_adapters/mongoid_adapter" if Module.const_defined?(:Mongoid)
-
 module SyncMachine
   # Adapt generic SyncMachine functionality to a specific ORM.
   module OrmAdapters

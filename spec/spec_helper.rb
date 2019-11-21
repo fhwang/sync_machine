@@ -4,6 +4,8 @@ require "factory_bot"
 require "mongoid"
 require "sync_machine"
 require "sidekiq/testing"
+require "sync_machine/orm_adapters/active_record_adapter"
+require "sync_machine/orm_adapters/mongoid_adapter"
 
 Dir.entries(File.expand_path("../support", __FILE__)).each do |file|
   require "support/#{file}" if file =~ /\.rb$/
