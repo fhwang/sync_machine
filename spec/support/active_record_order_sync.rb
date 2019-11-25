@@ -7,6 +7,8 @@ module ActiveRecordOrderSync
     listen_to_models :active_record_order, :active_record_customer
   end
 
+  ChangeListener.subscribe
+
   class FindSubjectsWorker < SyncMachine::FindSubjectsWorker
     subject_ids_from_active_record_customer do |active_record_customer|
       active_record_customer.active_record_order_ids

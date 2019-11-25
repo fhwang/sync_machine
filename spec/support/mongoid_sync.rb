@@ -9,6 +9,8 @@ module MongoidSync
     listen_to_models :mongoid_customer, :mongoid_order
   end
 
+  ChangeListener.subscribe
+
   class FindSubjectsWorker < SyncMachine::FindSubjectsWorker
     subject_ids_from_mongoid_customer do |mongoid_customer|
       mongoid_customer.mongoid_order_ids

@@ -9,7 +9,6 @@ module SyncMachine
   class ChangeListener
     def self.inherited(base)
       base.cattr_accessor :model_syms
-      base.subscribe
     end
 
     def self.listen_to_models(*model_syms)
