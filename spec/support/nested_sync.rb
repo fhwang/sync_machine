@@ -5,6 +5,8 @@ module OuterNesting
     class ChangeListener < SyncMachine::ChangeListener
       listen_to_models :subject
     end
+
+    ChangeListener.subscribe
   end
 end
 
