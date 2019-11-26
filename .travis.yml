@@ -2,6 +2,15 @@
 sudo: false
 language: ruby
 cache: bundler
+gemfile:
+  - Gemfile.mongoid6-activesupport5
+  - Gemfile.mongoid7
 rvm:
   - 2.4.2
+  - 2.5.7
+  - 2.6.3
+matrix:
+  exclude:
+    - gemfile: Gemfile.mongoid7
+      rvm: 2.4.2
 before_install: gem install bundler -v 2.0.1

@@ -1,0 +1,17 @@
+source 'https://rubygems.org'
+
+# Runtime dependencies
+gem 'mongoid', '>= 7'
+
+# Development dependencies
+gem 'activerecord'
+gem 'factory_bot'
+gem 'fhwang-wisper-mongoid', '>= 0.3.0'
+gem 'gemika'
+gem 'opentracing'
+gem 'rspec'
+gem 'sqlite3'
+gem 'wisper-activerecord'
+
+# Gem under test
+gem 'sync_machine', path: '.'
