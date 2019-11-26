@@ -1,0 +1,92 @@
+PATH
+  remote: .
+  specs:
+    sync_machine (1.2.0)
+      activesupport
+      sidekiq
+      wisper
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (5.2.3)
+      activesupport (= 5.2.3)
+    activerecord (5.2.3)
+      activemodel (= 5.2.3)
+      activesupport (= 5.2.3)
+      arel (>= 9.0)
+    activesupport (5.2.3)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+    arel (9.0.0)
+    bson (4.6.0)
+    concurrent-ruby (1.1.5)
+    connection_pool (2.2.2)
+    diff-lcs (1.3)
+    factory_bot (5.1.1)
+      activesupport (>= 4.2.0)
+    fhwang-wisper-mongoid (0.3.0)
+      activesupport
+      mongoid (>= 6)
+      wisper
+    gemika (0.4.0)
+    i18n (1.7.0)
+      concurrent-ruby (~> 1.0)
+    minitest (5.13.0)
+    mongo (2.11.1)
+      bson (>= 4.6.0, < 5.0.0)
+    mongoid (6.4.4)
+      activemodel (>= 5.1, < 6.0.0)
+      mongo (>= 2.5.1, < 3.0.0)
+    opentracing (0.5.0)
+    rack (2.0.7)
+    rack-protection (2.0.7)
+      rack
+    redis (4.1.3)
+    rspec (3.9.0)
+      rspec-core (~> 3.9.0)
+      rspec-expectations (~> 3.9.0)
+      rspec-mocks (~> 3.9.0)
+    rspec-core (3.9.0)
+      rspec-support (~> 3.9.0)
+    rspec-expectations (3.9.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.9.0)
+    rspec-mocks (3.9.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.9.0)
+    rspec-support (3.9.0)
+    sidekiq (5.2.7)
+      connection_pool (~> 2.2, >= 2.2.2)
+      rack (>= 1.5.0)
+      rack-protection (>= 1.5.0)
+      redis (>= 3.3.5, < 5)
+    sqlite3 (1.4.1)
+    thread_safe (0.3.6)
+    tzinfo (1.2.5)
+      thread_safe (~> 0.1)
+    wisper (2.0.1)
+    wisper-activerecord (1.0.0)
+      activerecord (>= 3.0.0)
+      wisper (~> 2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activerecord
+  activesupport (>= 5, < 6)
+  factory_bot
+  fhwang-wisper-mongoid (>= 0.3.0)
+  gemika
+  mongoid (>= 6, < 7)
+  opentracing
+  rspec
+  sqlite3
+  sync_machine!
+  wisper-activerecord
+
+BUNDLED WITH
+   2.0.2
