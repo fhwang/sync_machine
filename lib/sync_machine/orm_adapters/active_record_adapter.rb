@@ -1,8 +1,8 @@
 begin
   require 'wisper/activerecord'
 rescue LoadError
-  Kernel.abort(
-    "Please install the wisper-activerecord gem when using SyncMachine with ActiveRecord."
+  SyncMachine.abort_with_installation_hint(
+    'wisper-activerecord', 'ActiveRecord'
   )
 end
 

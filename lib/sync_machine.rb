@@ -5,6 +5,7 @@ require "sync_machine/change_listener"
 require "sync_machine/ensure_publication"
 require "sync_machine/ensure_publication_worker"
 require "sync_machine/find_subjects_worker"
+require "sync_machine/tracer_adapters"
 require "sync_machine/orm_adapters"
 require "sync_machine/version"
 require "sync_machine/railtie" if defined?(Rails::Railtie)
@@ -12,6 +13,12 @@ require "sync_machine/railtie" if defined?(Rails::Railtie)
 # A mini-framework for intelligently publishing complex model changes to an
 # external API..
 module SyncMachine
+  def self.abort_with_installation_hint(gem_name, dependency)
+    Kernel.abort(
+      "Please install the #{gem_name} gem when using SyncMachine with #{dependency}."
+    )
+  end
+
   # Force loading of all relevant classes.  Should only be necessary when
   # running your application in a way that it defers loading constants, i.e.,
   # Rails' development or test mode.

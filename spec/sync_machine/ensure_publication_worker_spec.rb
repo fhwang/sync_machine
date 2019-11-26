@@ -15,10 +15,33 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
         expect(ActiveRecordOrderSync::PostService).not_to receive(:post)
         perform
       end
+
+      it "logs a span for every hook that's called" do
+        tracer_adapter = class_double(
+          'SyncMachine::TracerAdapters::NullAdapter'
+        )
+        expect(tracer_adapter).to \
+          receive(:start_active_span).with('check_publishable')
+        expect(tracer_adapter).not_to \
+          receive(:start_active_span).with('build')
+        expect(tracer_adapter).not_to \
+          receive(:start_active_span).with('publish')
+        expect(tracer_adapter).not_to \
+          receive(:start_active_span).with('after_publish')
+        allow(SyncMachine::TracerAdapters).to \
+          receive(:tracer_adapter).and_return(tracer_adapter)
+        perform
+      end
     end
 
     describe "if a payload has never been sent" do
-      let(:subject) { create(:active_record_order, publishable: true) }
+      let(:subject) {
+        create(
+          :active_record_order,
+          publishable: true,
+          next_payload: { 'abc' => 'def' }
+        )
+      }
 
       it "sends the payload" do
         expect(ActiveRecordOrderSync::PostService).to receive(:post)
@@ -27,6 +50,22 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
 
       it "calls the after_publish block after sending the payload" do
         expect(ActiveRecordOrderSync::PostService).to receive(:after_post)
+        perform
+      end
+
+      it "logs a span for every hook that's called" do
+        tracer_adapter = class_double(
+          'SyncMachine::TracerAdapters::NullAdapter'
+        )
+        hook_names = %w(check_publishable build publish after_publish)
+        hook_names.each do |hook_name|
+          expect(tracer_adapter).to \
+            receive(:start_active_span).with(hook_name) { |&block|
+              block.call
+            }
+        end
+        allow(SyncMachine::TracerAdapters).to \
+          receive(:tracer_adapter).and_return(tracer_adapter)
         perform
       end
     end

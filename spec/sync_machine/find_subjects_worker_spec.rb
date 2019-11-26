@@ -65,6 +65,24 @@ RSpec.describe SyncMachine::FindSubjectsWorker do
       expect(job['args'].first).to eq("ARC#{customer.id.to_s}")
       expect(job['args'].last).to eq(enqueue_time_str)
     end
+
+    it "logs a span for every hook that's called" do
+      tracer_adapter = class_double(
+        'SyncMachine::TracerAdapters::NullAdapter'
+      )
+      expect(tracer_adapter).to \
+        receive(:start_active_span).
+        with('subject_ids_from_active_record_customer') { |&block|
+          block.call
+        }
+      allow(SyncMachine::TracerAdapters).to \
+        receive(:tracer_adapter).and_return(tracer_adapter)
+      customer = create(:active_record_customer)
+      enqueue_time_str = Time.now.iso8601
+      ActiveRecordOrderSync::FindSubjectsWorker.new.perform(
+        'ActiveRecordCustomer', customer.id, ['name'], enqueue_time_str
+      )
+    end
   end
 
   describe "when the ORM is Mongoid" do
