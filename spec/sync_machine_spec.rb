@@ -4,8 +4,8 @@ RSpec.describe SyncMachine do
   end
 
   it "handles SyncMachine modules of arbitrary depth" do
-    expect(SyncMachine.sync_module(ActiveRecordOrderSync::ChangeListener)).to \
-      eq(ActiveRecordOrderSync)
+    expect(SyncMachine.sync_module(OrderSync::ChangeListener)).to \
+      eq(OrderSync)
     expect(SyncMachine.sync_module(OuterNesting::NestedSync::ChangeListener)).to \
       eq(OuterNesting::NestedSync)
   end

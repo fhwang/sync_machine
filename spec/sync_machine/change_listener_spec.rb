@@ -3,14 +3,14 @@ require 'spec_helper'
 RSpec.describe SyncMachine::ChangeListener do
   describe "when the ORM is ActiveRecord" do
     before do
-      ActiveRecordOrderSync::FindSubjectsWorker.clear
+      OrderSync::FindSubjectsWorker.clear
     end
 
     describe "when a record is created" do
       it "enqueues a FindSubjectsWorker" do
         subject = ActiveRecordCustomer.create!
-        expect(ActiveRecordOrderSync::FindSubjectsWorker.jobs.count).to eq(1)
-        args = ActiveRecordOrderSync::FindSubjectsWorker.jobs.first['args']
+        expect(OrderSync::FindSubjectsWorker.jobs.count).to eq(1)
+        args = OrderSync::FindSubjectsWorker.jobs.first['args']
         expect(args.size).to eq(4)
         expect(args[0]).to eq('ActiveRecordCustomer')
         expect(args[1]).to eq(subject.id)
@@ -22,11 +22,11 @@ RSpec.describe SyncMachine::ChangeListener do
     describe "after a record has been updated" do
       before do
         @test_sync_subject = ActiveRecordCustomer.create!
-        ActiveRecordOrderSync::FindSubjectsWorker.clear
+        OrderSync::FindSubjectsWorker.clear
         @test_sync_subject.name = "new name"
         @test_sync_subject.save!
-        expect(ActiveRecordOrderSync::FindSubjectsWorker.jobs.count).to eq(1)
-        @args = ActiveRecordOrderSync::FindSubjectsWorker.jobs.first['args']
+        expect(OrderSync::FindSubjectsWorker.jobs.count).to eq(1)
+        @args = OrderSync::FindSubjectsWorker.jobs.first['args']
       end
 
       it "includes changed keys" do

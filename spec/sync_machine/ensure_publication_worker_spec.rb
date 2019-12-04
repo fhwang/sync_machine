@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe SyncMachine::EnsurePublicationWorker do
   describe "when the ORM is ActiveRecord" do
     def perform
-      ActiveRecordOrderSync::EnsurePublicationWorker.new.perform(
+      OrderSync::EnsurePublicationWorker.new.perform(
         subject.id, Time.now.iso8601
       )
     end
@@ -12,7 +12,7 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
       let(:subject) { create(:active_record_order, publishable: false) }
 
       it "does not send the payload" do
-        expect(ActiveRecordOrderSync::PostService).not_to receive(:post)
+        expect(OrderSync::PostService).not_to receive(:post)
         perform
       end
 
@@ -44,12 +44,12 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
       }
 
       it "sends the payload" do
-        expect(ActiveRecordOrderSync::PostService).to receive(:post)
+        expect(OrderSync::PostService).to receive(:post)
         perform
       end
 
       it "calls the after_publish block after sending the payload" do
-        expect(ActiveRecordOrderSync::PostService).to receive(:after_post)
+        expect(OrderSync::PostService).to receive(:after_post)
         perform
       end
 
@@ -77,7 +77,7 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
       }
 
       before do
-        ActiveRecordOrderSync::Payload.create!(
+        OrderSync::Payload.create!(
           body: payload,
           generated_at: Time.now - 1.minute,
           subject_id: subject.id
@@ -85,12 +85,12 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
       end
 
       it "does not send the payload" do
-        expect(ActiveRecordOrderSync::PostService).not_to receive(:post)
+        expect(OrderSync::PostService).not_to receive(:post)
         perform
       end
 
       it "does not call the after_publish hook" do
-        expect(ActiveRecordOrderSync::PostService).not_to receive(:after_post)
+        expect(OrderSync::PostService).not_to receive(:after_post)
         perform
       end
     end
@@ -105,7 +105,7 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
       }
 
       before do
-        ActiveRecordOrderSync::Payload.create!(
+        OrderSync::Payload.create!(
           body: last_payload,
           generated_at: Time.now - 1.minute,
           subject_id: subject.id
@@ -113,7 +113,7 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
       end
 
       it "sends the payload" do
-        expect(ActiveRecordOrderSync::PostService).to receive(:post)
+        expect(OrderSync::PostService).to receive(:post)
         perform
       end
     end

@@ -1,4 +1,4 @@
-module ActiveRecordOrderSync
+module OrderSync
   extend SyncMachine
 
   subject :active_record_order

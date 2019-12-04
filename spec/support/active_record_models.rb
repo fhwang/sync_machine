@@ -31,7 +31,7 @@ class ActiveRecordOrder < ActiveRecord::Base
   belongs_to :active_record_customer
 end
 
-module ActiveRecordOrderSync
+module OrderSync
   class Payload < ActiveRecord::Base
     self.table_name = 'active_record_order_sync_payloads'
 

@@ -3,8 +3,8 @@ require 'spec_helper'
 RSpec.describe SyncMachine::FindSubjectsWorker do
   describe "when the ORM is ActiveRecord" do
     before do
-      ActiveRecordOrderSync::EnsurePublicationWorker.clear
-      ActiveRecordCustomerSync::EnsurePublicationWorker.clear
+      OrderSync::EnsurePublicationWorker.clear
+      CustomerSync::EnsurePublicationWorker.clear
     end
 
     it "enqueues one EnsurePublicationWorker for each subject_id" do
@@ -12,11 +12,11 @@ RSpec.describe SyncMachine::FindSubjectsWorker do
       order1 = create(:active_record_order, active_record_customer: customer)
       order2 = create(:active_record_order, active_record_customer: customer)
       enqueue_time_str = Time.now.iso8601
-      ActiveRecordOrderSync::FindSubjectsWorker.new.perform(
+      OrderSync::FindSubjectsWorker.new.perform(
         'ActiveRecordCustomer', customer.id, ['name'], enqueue_time_str
       )
-      expect(ActiveRecordOrderSync::EnsurePublicationWorker.jobs.count).to eq(2)
-      jobs = ActiveRecordOrderSync::EnsurePublicationWorker.jobs
+      expect(OrderSync::EnsurePublicationWorker.jobs.count).to eq(2)
+      jobs = OrderSync::EnsurePublicationWorker.jobs
       [order1, order2].each do |order|
         order_job = jobs.detect { |j| j['args'].first == order.id }
         expect(order_job).to be_present
@@ -28,12 +28,12 @@ RSpec.describe SyncMachine::FindSubjectsWorker do
     it "handles blocks that don't return an array" do
       order = create(:active_record_order)
       enqueue_time_str = Time.now.iso8601
-      ActiveRecordCustomerSync::FindSubjectsWorker.new.perform(
+      CustomerSync::FindSubjectsWorker.new.perform(
         'ActiveRecordOrder', order.id, ['name'], enqueue_time_str
       )
-      expect(ActiveRecordCustomerSync::EnsurePublicationWorker.jobs.count).to \
+      expect(CustomerSync::EnsurePublicationWorker.jobs.count).to \
         eq(1)
-      job = ActiveRecordCustomerSync::EnsurePublicationWorker.jobs.first
+      job = CustomerSync::EnsurePublicationWorker.jobs.first
       expect(job['args'].count).to eq(2)
       expect(job['args'].first).to eq(order.active_record_customer_id)
       expect(job['args'].last).to eq(enqueue_time_str)
@@ -42,11 +42,11 @@ RSpec.describe SyncMachine::FindSubjectsWorker do
     it "handles the default case" do
       order = create(:active_record_order)
       enqueue_time_str = Time.now.iso8601
-      ActiveRecordOrderSync::FindSubjectsWorker.new.perform(
+      OrderSync::FindSubjectsWorker.new.perform(
         'ActiveRecordOrder', order.id.to_s, ['name'], enqueue_time_str
       )
-      expect(ActiveRecordOrderSync::EnsurePublicationWorker.jobs.count).to eq(1)
-      job = ActiveRecordOrderSync::EnsurePublicationWorker.jobs.first
+      expect(OrderSync::EnsurePublicationWorker.jobs.count).to eq(1)
+      job = OrderSync::EnsurePublicationWorker.jobs.first
       expect(job['args'].count).to eq(2)
       expect(job['args'].first).to eq(order.id.to_s)
       expect(job['args'].last).to eq(enqueue_time_str)
@@ -55,12 +55,12 @@ RSpec.describe SyncMachine::FindSubjectsWorker do
     it "allows a manual override of the default case and wraps a single ID in an array" do
       customer = create(:active_record_customer)
       enqueue_time_str = Time.now.iso8601
-      ActiveRecordCustomerSync::FindSubjectsWorker.new.perform(
+      CustomerSync::FindSubjectsWorker.new.perform(
         'ActiveRecordCustomer', customer.id.to_s, ['name'], enqueue_time_str
       )
-      expect(ActiveRecordCustomerSync::EnsurePublicationWorker.jobs.count).to \
+      expect(CustomerSync::EnsurePublicationWorker.jobs.count).to \
         eq(1)
-      job = ActiveRecordCustomerSync::EnsurePublicationWorker.jobs.first
+      job = CustomerSync::EnsurePublicationWorker.jobs.first
       expect(job['args'].count).to eq(2)
       expect(job['args'].first).to eq("ARC#{customer.id.to_s}")
       expect(job['args'].last).to eq(enqueue_time_str)
@@ -79,7 +79,7 @@ RSpec.describe SyncMachine::FindSubjectsWorker do
         receive(:tracer_adapter).and_return(tracer_adapter)
       customer = create(:active_record_customer)
       enqueue_time_str = Time.now.iso8601
-      ActiveRecordOrderSync::FindSubjectsWorker.new.perform(
+      OrderSync::FindSubjectsWorker.new.perform(
         'ActiveRecordCustomer', customer.id, ['name'], enqueue_time_str
       )
     end

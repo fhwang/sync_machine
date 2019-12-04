@@ -1,4 +1,4 @@
-module ActiveRecordCustomerSync
+module CustomerSync
   extend SyncMachine
 
   subject :active_record_customer
