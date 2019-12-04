@@ -45,8 +45,81 @@ RSpec.describe SyncMachine::ChangeListener do
     end
   end
 
+  describe "when the change listener is listening to a Wisper event" do
+    before do
+      WisperEventListeningOrderSync::FindSubjectsWorker.clear
+    end
+
+    it "does not fire based on a simple create" do
+      Order.create!
+      expect(WisperEventListeningOrderSync::FindSubjectsWorker.jobs.count).to \
+        eq(0)
+    end
+
+    it "fires when the Wisper event is manually published" do
+      order = Order.create!
+      broadcaster = WisperEventListeningOrderSync::WisperBroadcaster.new
+      broadcaster.broadcast_wisper_event(order)
+      expect(WisperEventListeningOrderSync::FindSubjectsWorker.jobs.count).to \
+        eq(1)
+      job = WisperEventListeningOrderSync::FindSubjectsWorker.jobs.first
+      args = job['args']
+      expect(args.size).to eq(4)
+      expect(args[0]).to eq('Order')
+      expect(args[1]).to eq(order.id)
+      expect(args[2]).to eq(['id'])
+      expect(Time.parse(args[3])).to be_within(1).of(Time.now)
+    end
+
+    it "finds subjects even if there are no changes on the record" do
+      Order.create!
+      order = Order.last
+      expect(order.previous_changes.keys).to be_blank
+      broadcaster = WisperEventListeningOrderSync::WisperBroadcaster.new
+      broadcaster.broadcast_wisper_event(order)
+      expect(WisperEventListeningOrderSync::FindSubjectsWorker.jobs.count).to \
+        eq(1)
+    end
+  end
+
   describe "when the ORM is Mongoid" do
     describe "when a record is created" do
+      it "enqueues a FindSubjectsWorker with the ID as a string" do
+        subject = MongoidCustomer.create!
+        expect(MongoidSync::FindSubjectsWorker.jobs.count).to eq(1)
+        args = MongoidSync::FindSubjectsWorker.jobs.first['args']
+        expect(args[1]).to eq(subject.id.to_s)
+      end
+    end
+
+    describe "when values within an embed are changed" do
+      before do
+        @mongoid_customer = MongoidCustomer.create!(
+          mongoid_address: MongoidAddress.new(address1: '123 Main Street')
+        )
+        MongoidSync::FindSubjectsWorker.clear
+        @mongoid_customer.mongoid_address.address2 = 'Apt 45'
+        @mongoid_customer.save!
+      end
+
+      it "enqueues a FindSubjectsWorker" do
+        expect(MongoidSync::FindSubjectsWorker.jobs.count).to eq(1)
+        args = MongoidSync::FindSubjectsWorker.jobs.first['args']
+        expect(args.size).to eq(4)
+        expect(args[0]).to eq('MongoidCustomer')
+        expect(args[1]).to eq(@mongoid_customer.id.to_s)
+        expect(args[2]).to eq([])
+        expect(Time.parse(args[3])).to be_within(1).of(Time.now)
+      end
+    end
+  end
+
+  describe "when the ORM is Mongoid" do
+    describe "when a record is created" do
+      before do
+        MongoidSync::FindSubjectsWorker.clear
+      end
+
       it "enqueues a FindSubjectsWorker with the ID as a string" do
         subject = MongoidCustomer.create!
         expect(MongoidSync::FindSubjectsWorker.jobs.count).to eq(1)
