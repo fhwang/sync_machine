@@ -1,8 +1,8 @@
 FactoryBot.define do
-  factory :active_record_customer
+  factory :customer
 
-  factory :active_record_order do
-    active_record_customer
+  factory :order do
+    customer
   end
 
   factory :mongoid_customer

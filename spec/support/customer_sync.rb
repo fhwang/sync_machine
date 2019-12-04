@@ -1,21 +1,21 @@
 module CustomerSync
   extend SyncMachine
 
-  subject :active_record_customer
+  subject :customer
 
   class ChangeListener < SyncMachine::ChangeListener
-    listen_to_models :active_record_order, :active_record_customer
+    listen_to_models :order, :customer
   end
 
   ChangeListener.subscribe
 
   class FindSubjectsWorker < SyncMachine::FindSubjectsWorker
-    subject_ids_from_active_record_customer do |active_record_customer|
-      "ARC#{active_record_customer.id}"
+    subject_ids_from_customer do |customer|
+      "ARC#{customer.id}"
     end
 
-    subject_ids_from_active_record_order do |active_record_order|
-      active_record_order.active_record_customer_id
+    subject_ids_from_order do |order|
+      order.customer_id
     end
   end
 

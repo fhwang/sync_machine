@@ -3,17 +3,17 @@ require 'active_record'
 def create_tables_for_models
   ActiveRecord::Migration.verbose = false
   ActiveRecord::Schema.define do
-    create_table :active_record_customers, force: true do |t|
+    create_table :customers, force: true do |t|
       t.string :name
     end
 
-    create_table :active_record_orders, force: true do |t|
+    create_table :orders, force: true do |t|
       t.string :next_payload
       t.boolean :publishable
-      t.integer :active_record_customer_id
+      t.integer :customer_id
     end
 
-    create_table :active_record_order_sync_payloads, force: true do |t|
+    create_table :order_sync_payloads, force: true do |t|
       t.text :body
       t.datetime  :generated_at
       t.integer   :subject_id
@@ -21,19 +21,19 @@ def create_tables_for_models
   end
 end
 
-class ActiveRecordCustomer < ActiveRecord::Base
-  has_many :active_record_orders
+class Customer < ActiveRecord::Base
+  has_many :orders
 end
 
-class ActiveRecordOrder < ActiveRecord::Base
+class Order < ActiveRecord::Base
   serialize :next_payload
 
-  belongs_to :active_record_customer
+  belongs_to :customer
 end
 
 module OrderSync
   class Payload < ActiveRecord::Base
-    self.table_name = 'active_record_order_sync_payloads'
+    self.table_name = 'order_sync_payloads'
 
     serialize :body
 

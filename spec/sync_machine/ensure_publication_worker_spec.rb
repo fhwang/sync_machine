@@ -9,7 +9,7 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
     end
 
     describe "if the subject is not publishable" do
-      let(:subject) { create(:active_record_order, publishable: false) }
+      let(:subject) { create(:order, publishable: false) }
 
       it "does not send the payload" do
         expect(OrderSync::PostService).not_to receive(:post)
@@ -37,7 +37,7 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
     describe "if a payload has never been sent" do
       let(:subject) {
         create(
-          :active_record_order,
+          :order,
           publishable: true,
           next_payload: { 'abc' => 'def' }
         )
@@ -73,7 +73,7 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
     describe "if the same payload has previously been sent" do
       let(:payload) { { "abc" => "def" } }
       let(:subject) {
-        create(:active_record_order, publishable: true, next_payload: payload)
+        create(:order, publishable: true, next_payload: payload)
       }
 
       before do
@@ -100,7 +100,7 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
       let(:next_payload) { { "abc" => "123" } }
       let(:subject) {
         create(
-          :active_record_order, publishable: true, next_payload: next_payload
+          :order, publishable: true, next_payload: next_payload
         )
       }
 
