@@ -53,23 +53,10 @@ module SyncMachine
 
     private
 
-    def changed_keys(record)
-      orm_adapter.change_listener_changed_keys(record)
-    end
-
     def find_subjects_async(record)
       sync_module = SyncMachine.sync_module(self.class)
       finder_class = sync_module.const_get('FindSubjectsWorker')
-      finder_class.perform_async(
-        record.class.name,
-        record_id_for_job(record.id),
-        changed_keys(record),
-        Time.now.to_json
-      )
-    end
-
-    def record_id_for_job(record_id)
-      orm_adapter.record_id_for_job(record_id)
+      finder_class.perform_async_for_record(record)
     end
 
     def orm_adapter

@@ -82,4 +82,29 @@ RSpec.describe SyncMachine::FindSubjectsWorker do
       'Customer', customer.id, ['name'], enqueue_time_str
     )
   end
+
+  describe "for a sync with no ChangeListener at all" do
+    before do
+      NoListenerSync::FindSubjectsWorker.clear
+    end
+
+    it "does not enqueue a FindSubjectsWorker job when you create the subject" do
+      create(:order)
+      expect(NoListenerSync::FindSubjectsWorker.jobs).to be_empty
+    end
+
+    it "offers an easy way to enqueue a FindSubjectsWorker job" do
+      order = create(:order)
+      NoListenerSync::FindSubjectsWorker.perform_async_for_record(order)
+      expect(NoListenerSync::FindSubjectsWorker.jobs.count).to \
+        eq(1)
+      job = NoListenerSync::FindSubjectsWorker.jobs.first
+      args = job['args']
+      expect(args.size).to eq(4)
+      expect(args[0]).to eq('Order')
+      expect(args[1]).to eq(order.id)
+      expect(args[2]).to eq(['id', 'customer_id'])
+      expect(Time.parse(args[3])).to be_within(1).of(Time.now)
+    end
+  end
 end
