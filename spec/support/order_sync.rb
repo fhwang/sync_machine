@@ -1,20 +1,20 @@
-module ActiveRecordOrderSync
+module OrderSync
   extend SyncMachine
 
-  subject :active_record_order
+  subject :order
 
   class ChangeListener < SyncMachine::ChangeListener
-    listen_to_models :active_record_order, :active_record_customer
+    listen_to_models :order, :customer
   end
 
   ChangeListener.subscribe
 
   class FindSubjectsWorker < SyncMachine::FindSubjectsWorker
-    subject_ids_from_active_record_customer do |active_record_customer|
-      active_record_customer.active_record_order_ids
+    subject_ids_from_customer do |customer|
+      customer.order_ids
     end
 
-    subject_ids_from_active_record_order
+    subject_ids_from_order
   end
 
   class EnsurePublicationWorker < SyncMachine::EnsurePublicationWorker

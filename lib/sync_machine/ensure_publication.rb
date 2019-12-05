@@ -47,8 +47,12 @@ module SyncMachine
       )
     end
 
+    def publishable?
+      !hook(:check_publishable) || hook(:check_publishable).call(@subject)
+    end
+
     def run_deduped
-      return unless hook(:check_publishable).call(@subject)
+      return unless publishable?
       if publication_history.last_publish_equals?(payload_body)
         publication_history.record_generation_time
       else

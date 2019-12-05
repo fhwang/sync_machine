@@ -3,6 +3,9 @@ module <%= class_name %>
     check_publishable do |<%= subject %>|
       # Return a boolean value indicating whether the <%= subject %>
       # should be published at all.
+      #
+      # This step is optional.  If the step is deleted, the <%= subject %>
+      # is considered always publishable.
     end
 
     build do |<%= subject %>|
@@ -14,8 +17,9 @@ module <%= class_name %>
     end
 
     after_publish do |<%= subject %>|
-      # Execute any actions after a successful publish.  This step is optional
-      # and can be deleted entirely.
+      # Execute any actions after a successful publish.
+      #
+      # This step is optional and can be deleted entirely.
     end
   end
 end

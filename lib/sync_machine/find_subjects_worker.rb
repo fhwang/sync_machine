@@ -30,6 +30,16 @@ module SyncMachine
       end
     end
 
+    def self.perform_async_for_record(record)
+      sync_module = SyncMachine.sync_module(self)
+      orm_adapter = sync_module.orm_adapter
+      record_id_for_job = orm_adapter.record_id_for_job(record.id)
+      changed_keys = orm_adapter.change_listener_changed_keys(record)
+      perform_async(
+        record.class.name, record_id_for_job, changed_keys, Time.now.to_json
+      )
+    end
+
     # :reek:LongParameterList is unavoidable here since this is a Sidekiq
     # worker
     def perform(record_class_name, record_id, changed_keys, enqueue_time_str)
