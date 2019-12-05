@@ -18,6 +18,12 @@ def create_tables_for_models
       t.datetime  :generated_at
       t.integer   :subject_id
     end
+
+    create_table :no_check_publishable_sync_payloads, force: true do |t|
+      t.text :body
+      t.datetime  :generated_at
+      t.integer   :subject_id
+    end
   end
 end
 
@@ -34,6 +40,17 @@ end
 module OrderSync
   class Payload < ActiveRecord::Base
     self.table_name = 'order_sync_payloads'
+
+    serialize :body
+
+    validates :generated_at, presence: true
+    validates :subject_id, presence: true, uniqueness: true
+  end
+end
+
+module NoCheckPublishableSync
+  class Payload < ActiveRecord::Base
+    self.table_name = 'no_check_publishable_sync_payloads'
 
     serialize :body
 

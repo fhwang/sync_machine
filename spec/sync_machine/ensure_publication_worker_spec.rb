@@ -116,4 +116,14 @@ RSpec.describe SyncMachine::EnsurePublicationWorker do
       perform
     end
   end
+
+  describe "if there is no check_publishable block" do
+    it "always builds the payload" do
+      expect(NoCheckPublishableSync::Builder).to \
+        receive(:build).at_least(:once)
+      NoCheckPublishableSync::EnsurePublicationWorker.new.perform(
+        create(:order).id, Time.now.iso8601
+      )
+    end
+  end
 end
