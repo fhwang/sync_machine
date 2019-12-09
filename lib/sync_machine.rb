@@ -6,6 +6,7 @@ require "sync_machine/ensure_publication"
 require "sync_machine/ensure_publication_worker"
 require "sync_machine/find_subjects_worker"
 require "sync_machine/tracer_adapters"
+require "sync_machine/redis_lock"
 require "sync_machine/orm_adapters"
 require "sync_machine/version"
 require "sync_machine/railtie" if defined?(Rails::Railtie)
