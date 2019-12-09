@@ -13,22 +13,14 @@ module SyncMachine
       end
 
       def dedupe
-        if acquire_lock
-          begin
-            yield unless performed_since_enqueue_time?
-          ensure
-            Redis.current.del(redis_lock)
-          end
-        else
-          @job_class.perform_in(1 + rand(10), @subject_id, @enqueue_time_str)
+        lock = RedisLock.new("#{@job_class.name}:#{@subject_id}")
+        lock.acquire do
+          yield unless performed_since_enqueue_time?
         end
+        lock.acquired? || reschedule_job
       end
 
       private
-
-      def acquire_lock
-        Redis.current.set(redis_lock, "true", nx: true, ex: 10.minutes)
-      end
 
       def enqueue_time
         @enqueue_time ||= Time.parse(@enqueue_time_str)
@@ -38,8 +30,8 @@ module SyncMachine
         @last_job_finished_at && @last_job_finished_at > enqueue_time
       end
 
-      def redis_lock
-        "#{@job_class.name}:#{@subject_id}"
+      def reschedule_job
+        @job_class.perform_in(1 + rand(10), @subject_id, @enqueue_time_str)
       end
     end
   end
