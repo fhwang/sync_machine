@@ -206,3 +206,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 Everyone interacting in the SyncMachine project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/fhwang/sync_machine/blob/master/CODE_OF_CONDUCT.md).
 
+<!-- Qlty token test 2026-11-25 -->
